@@ -1,0 +1,39 @@
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      # - DATA_DIR=/tmp/localstack/data
+    volumes:
+      # - ./localstack:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - localnet
+
+
+  terraform:
+    image: hashicorp/terraform:light
+    platform: linux/amd64
+    container_name: terraform
+    depends_on:
+      - localstack
+    working_dir: /workspace
+    volumes:
+      - ./terraform:/workspace
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=eu-west-2
+    entrypoint: /bin/sh
+    stdin_open: true
+    tty: true
+    networks:
+      - localnet
+
+networks:
+  localnet:

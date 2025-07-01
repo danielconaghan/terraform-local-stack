@@ -6,7 +6,7 @@ services:
       - "4566:4566"
       - "4571:4571"
     environment:
-      - SERVICES=s3
+      - SERVICES=iam,lambda
       - DEBUG=1
       # - DATA_DIR=/tmp/localstack/data
     volumes:

@@ -1,5 +1,35 @@
 # terraform-local-stack
 
+
+```
+local-dev/
+├── docker-compose.yml               # Orchestrates services + LocalStack
+├── terraform/
+│   ├── main.tf                      # AWS resources (API Gateway, Lambda, etc.)
+│   ├── variables.tf
+│   └── service-outputs.tf          # Outputs (e.g., API endpoints)
+├── services/
+│   ├── survey/
+│   │   ├── Dockerfile
+│   │   ├── index.php
+│   │   └── ...
+│   ├── analysis/
+│   │   └── ...
+│   ├── crm/
+│   │   └── ...
+│   ├── docgen/
+│   │   └── ...
+│   └── auth/
+│       └── ...
+├── lambdas/
+│   ├── router/
+│   │   ├── index.py
+│   │   └── lambda.zip
+│   └── ...
+└── .env                             # Shared config (e.g., AWS creds, ports)
+```
+
+
 Useful commands:
 
 

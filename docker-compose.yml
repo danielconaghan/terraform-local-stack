@@ -24,7 +24,7 @@ services:
       - localstack
     working_dir: /workspace
     volumes:
-      - ./terraform:/workspace
+      - ../terraform:/workspace
     environment:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
@@ -34,6 +34,23 @@ services:
     tty: true
     networks:
       - localnet
+
+
+  php1:
+    build: 
+      context: ./php-app
+    ports:
+      - "8001:80"
+    environment:
+      - APP_LABEL=APP1
+
+  php2:
+    build:
+      context: ./php-app
+    ports:
+      - "8002:80"
+    environment:
+      - APP_LABEL=APP2
 
 networks:
   localnet:

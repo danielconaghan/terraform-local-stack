@@ -1,56 +1,47 @@
 services:
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:latest
     container_name: localstack
     ports:
       - "4566:4566"
-      - "4571:4571"
     environment:
-      - SERVICES=iam,lambda
-      - DEBUG=1
-      # - DATA_DIR=/tmp/localstack/data
+      - SERVICES=lambda,apigateway,ecr,iam,s3
+      - DEBUG=0
     volumes:
-      # - ./localstack:/tmp/localstack
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - localnet
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   terraform:
-    image: hashicorp/terraform:light
+    image: hashicorp/terraform:1.9
     platform: linux/amd64
-    container_name: terraform
-    depends_on:
-      - localstack
     working_dir: /workspace
     volumes:
-      - ../terraform:/workspace
+      - ./terraform:/workspace
     environment:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_DEFAULT_REGION=eu-west-2
-    entrypoint: /bin/sh
-    stdin_open: true
-    tty: true
     networks:
       - localnet
+    entrypoint: ["terraform"]
 
-
-  php1:
-    build: 
-      context: ./php-app
+  frontend:
+    build: ./frontend
+    container_name: frontend
     ports:
-      - "8001:80"
+      - "3000:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
     environment:
-      - APP_LABEL=APP1
-
-  php2:
-    build:
-      context: ./php-app
-    ports:
-      - "8002:80"
-    environment:
-      - APP_LABEL=APP2
+      - API_URL=${API_URL:-}
+    networks:
+      - localnet
 
 networks:
   localnet:
